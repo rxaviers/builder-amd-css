@@ -33,7 +33,10 @@ define(['require', './normalize'], function(req, normalize) {
 
   //load file code - stolen from text plugin
   function loadFile(path) {
-    if (typeof process !== "undefined" && process.versions && !!process.versions.node && require.nodeRequire) {
+    if ( config.asReference && config.asReference.files ) {
+      var files = config.asReference.files;
+      return files[ path.replace( /^\//, "" ) ];
+    } else if (typeof process !== "undefined" && process.versions && !!process.versions.node && require.nodeRequire) {
       var fs = require.nodeRequire('fs');
       var file = fs.readFileSync(path, 'utf8');
       if (file.indexOf('\uFEFF') === 0)
@@ -64,7 +67,9 @@ define(['require', './normalize'], function(req, normalize) {
 
 
   function saveFile(path, data) {
-    if (typeof process !== "undefined" && process.versions && !!process.versions.node && require.nodeRequire) {
+    if ( config.asReference && config.asReference.files ) {
+      config.asReference.saveFile( path.replace( /^\//, "" ), data );
+    } else if (typeof process !== "undefined" && process.versions && !!process.versions.node && require.nodeRequire) {
       var fs = require.nodeRequire('fs');
       fs.writeFileSync(path, data, 'utf8');
     }
@@ -198,21 +203,18 @@ define(['require', './normalize'], function(req, normalize) {
 
     if (config.separateCSS) {
       var outPath = data.path.replace(/(\.js)?$/, '.css');
-      console.log('Writing CSS! file: ' + outPath + '\n');
 
       var css = layerBuffer.join('');
 
-      process.nextTick(function() {
-        if (global._requirejsCssData) {
-          css = global._requirejsCssData.css = css + global._requirejsCssData.css;
-          delete global._requirejsCssData.usedBy.css;
-          if (Object.keys(global._requirejsCssData.usedBy).length === 0) {
-            delete global._requirejsCssData;
-          }
+      if (global._requirejsCssData) {
+        css = global._requirejsCssData.css = css + global._requirejsCssData.css;
+        delete global._requirejsCssData.usedBy.css;
+        if (Object.keys(global._requirejsCssData.usedBy).length === 0) {
+          delete global._requirejsCssData;
         }
-        
-        saveFile(outPath, compress(css));
-      });
+      }
+      
+      saveFile(outPath, compress(css));
 
     }
     else if (config.buildCSS != false && config.writeCSSModule != true) {
