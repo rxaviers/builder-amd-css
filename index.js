@@ -25,8 +25,8 @@ function dequeueBuildCss() {
 	if ( args !== undefined ) {
 		callback = args[ 2 ];
 		args[ 2 ] = function() {
-			queue.shift();
 			callback.apply( {}, arguments );
+			queue.shift();
 			dequeueBuildCss();
 		};
 		buildCss.apply( {}, args );
