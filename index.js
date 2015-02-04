@@ -1,26 +1,49 @@
-var mutex, requireCssFiles,
+var mutex, queue, requireCssFiles,
 	fs = require( "fs" ),
 	glob = require( "glob" ),
 	path = require( "path" ),
 	requirejs = require( "requirejs-memfiles" ),
 	util = require( "util" );
 
+queue = [];
 requireCssFiles = {};
+
 glob.sync( __dirname + "/bower_components/require-css/**", { nodir: true } ).forEach(function( filepath ) {
 	requireCssFiles[ filepath.replace( __dirname, "" ).replace( /^\//, "" ) ] = fs.readFileSync( filepath );
 });
+
+function enqueueBuildCss() {
+	queue.push( arguments );
+	if ( queue.length === 1 ) {
+		dequeueBuildCss();
+	}
+}
+
+function dequeueBuildCss() {
+	var callback;
+	var args = queue[ 0 ];
+	if ( args !== undefined ) {
+		callback = args[ 2 ];
+		args[ 2 ] = function() {
+			queue.shift();
+			callback.apply( {}, arguments );
+			dequeueBuildCss();
+		};
+		buildCss.apply( {}, args );
+	}
+}
 
 function buildCss( files, config, callback ) {
 	var localCallback, include;
 
 	if ( mutex ) {
-		throw new Error( "Concurrent calls not supported" );
+		return callback( new Error( "Concurrent calls not supported" ) );
 	}
 	if ( typeof config !== "object" ) {
-		throw new Error( "missing or invalid config (object expected)" );
+		return callback( new Error( "missing or invalid config (object expected)" ) );
 	}
 	if ( !Array.isArray( config.include ) ) {
-		throw new Error( "missing or invalid config.include (array expected)" );
+		return callback( new Error( "missing or invalid config.include (array expected)" ) );
 	}
 	mutex = true;
 	localCallback = function( error, css ) {
@@ -90,5 +113,5 @@ module.exports = function( files, config, callback ) {
 		}
 	});
 
-	buildCss( clonedFiles, config, callback );
+	enqueueBuildCss( clonedFiles, config, callback );
 };
