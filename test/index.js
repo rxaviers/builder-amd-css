@@ -64,3 +64,26 @@ describe( "Using appDir", function() {
 	});
 
 });
+
+describe( "Using appDir and CSSes located in a different subdir", function() {
+	var css, files;
+
+	files = {
+		"a/foo.js": fs.readFileSync( __dirname + "/fixtures/css-elsewhere/a/foo.js" ),
+		"a/bar.js": fs.readFileSync( __dirname + "/fixtures/css-elsewhere/a/bar.js" ),
+		"b/foo.css": fs.readFileSync( __dirname + "/fixtures/css-elsewhere/b/foo.css" ),
+		"b/bar.css": fs.readFileSync( __dirname + "/fixtures/css-elsewhere/b/bar.css" ),
+	};
+
+	before(function( done ) {
+		AmdCssBuilder( files, { appDir: "a", include: [ "foo" ] }, function( error, _css ) {
+			css = _css;
+			done( error );
+		});
+	});
+
+	it( "should work just fine", function() {
+		expect( css ).to.equal( ".foo {}\n.bar {}\n" );
+	});
+
+});

@@ -34,8 +34,11 @@ function buildCss( files, config, callback ) {
 	// Include require-css files.
 	Object.keys( requireCssFiles ).forEach(function( filepath ) {
 		files[ filepath ] = requireCssFiles[ filepath ];
-		
 	});
+
+	function normalizePath( _path ) {
+		return path.normalize( _path ).replace( /^\//, "" );
+	}
 
 	config = util._extend( {}, config );
 	config.appDir = config.appDir || ".";
@@ -46,9 +49,13 @@ function buildCss( files, config, callback ) {
 	config.map[ "*" ] = config.map[ "*" ] || {};
 	config.map[ "*" ].css = "require-css/css";
 	config.asReference = {
-		files: files,
 		saveFile: function( path, data ) {
+			path = normalizePath( path );
 			files[ path ] = data;
+		},
+		loadFile: function( path ) {
+			path = normalizePath( path );
+			return files[ path ];
 		}
 	};
 	config.optimizeCss = "none";
