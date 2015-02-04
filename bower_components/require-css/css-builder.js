@@ -33,9 +33,8 @@ define(['require', './normalize'], function(req, normalize) {
 
   //load file code - stolen from text plugin
   function loadFile(path) {
-    if ( config.asReference && config.asReference.files ) {
-      var files = config.asReference.files;
-      return files[ path.replace( /^\//, "" ) ];
+    if ( config.asReference && config.asReference.loadFile ) {
+      return config.asReference.loadFile( path );
     } else if (typeof process !== "undefined" && process.versions && !!process.versions.node && require.nodeRequire) {
       var fs = require.nodeRequire('fs');
       var file = fs.readFileSync(path, 'utf8');
@@ -67,8 +66,8 @@ define(['require', './normalize'], function(req, normalize) {
 
 
   function saveFile(path, data) {
-    if ( config.asReference && config.asReference.files ) {
-      config.asReference.saveFile( path.replace( /^\//, "" ), data );
+    if ( config.asReference && config.asReference.saveFile ) {
+      config.asReference.saveFile( path, data );
     } else if (typeof process !== "undefined" && process.versions && !!process.versions.node && require.nodeRequire) {
       var fs = require.nodeRequire('fs');
       fs.writeFileSync(path, data, 'utf8');
