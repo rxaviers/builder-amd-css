@@ -49,7 +49,7 @@ amdCssBuilder( files, {
 }
 ```
 
-**requirejsConfig** *Object* [require.js build configuration][
+**requirejsConfig** *Object* [require.js build configuration][].
 
 **callback** *Function* called with three arguments: null or an Error object, a
 String with the built css content, an Object with the cloned built files
