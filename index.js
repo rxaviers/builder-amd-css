@@ -84,14 +84,18 @@ function buildCss( files, config, callback ) {
 module.exports = function( files, config, callback ) {
 	var clonedFiles = {};
 
-	// Clone files + make sure all CSSes are String utf-8.
-	Object.keys( files ).forEach(function( path ) {
-		if ( /\.css$/i.test( path ) ) {
-			clonedFiles[ path ] = files[ path ].toString( "utf-8" );
-		} else {
-			clonedFiles[ path ] = files[ path ];
-		}
-	});
+	try {
+		// Clone files + make sure all CSSes are String utf-8.
+		Object.keys( files ).forEach(function( path ) {
+			if ( /\.css$/i.test( path ) ) {
+				clonedFiles[ path ] = files[ path ].toString( "utf-8" );
+			} else {
+				clonedFiles[ path ] = files[ path ];
+			}
+		});
 
-	buildCss( clonedFiles, config, callback );
+		buildCss( clonedFiles, config, callback );
+	} catch( error ) {
+		callback( error );
+	}
 };
