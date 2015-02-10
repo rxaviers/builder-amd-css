@@ -11,7 +11,7 @@ files = {
 	"bar.css": fs.readFileSync( __dirname + "/fixtures/basic/bar.css" ),
 };
 
-describe( "The CSS dependencies of a JS file", function() {
+describe( "CSS dependencies of a JS file", function() {
 	var css;
 
 	before(function( done ) {
@@ -21,13 +21,13 @@ describe( "The CSS dependencies of a JS file", function() {
 		});
 	});
 
-	it( "must be included", function() {
+	it( "should be included", function() {
 		expect( css ).to.equal( ".bar {}\n" );
 	});
 
 });
 
-describe( "The CSS dependencies of JS dependencies", function() {
+describe( "CSS dependencies of JS dependencies", function() {
 	var css;
 
 	before(function( done ) {
@@ -37,13 +37,13 @@ describe( "The CSS dependencies of JS dependencies", function() {
 		});
 	});
 
-	it( "must be included", function() {
+	it( "should be included", function() {
 		expect( css ).to.equal( ".foo {}\n.bar {}\n" );
 	});
 
 });
 
-describe( "Using appDir", function() {
+describe( "Property appDir", function() {
 	var css, files;
 
 	files = {
@@ -66,7 +66,7 @@ describe( "Using appDir", function() {
 
 });
 
-describe( "Using appDir and CSSes located in a different subdir", function() {
+describe( "Property appDir plus CSSes located in a sibling subdir", function() {
 	var css, files;
 
 	files = {
@@ -138,14 +138,14 @@ describe( "Concurrent runs", function() {
 		});
 	});
 
-	it( "must be enqueued", function() {
+	it( "should be enqueued", function() {
 		expect( barCss ).to.equal( ".bar {}\n" );
 		expect( fooCss ).to.equal( ".foo {}\n.bar {}\n" );
 	});
 
 });
 
-describe( "onCssBuildWrite", function() {
+describe( "Property onCssBuildWrite", function() {
 	var css;
 
 	before(function( done ) {
