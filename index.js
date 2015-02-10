@@ -69,7 +69,7 @@ function buildCss( files, config, callback ) {
 
 	requirejs.setFiles( files, function( done ) {
 		requirejs.optimize( config, function() {
-			callback( null, files[ "dist/output.css" ], files );
+			callback( null, files[ "dist/output.css" ] || "", files );
 			done();
 		}, function( error ) {
 			callback( error );
