@@ -145,3 +145,27 @@ describe( "Concurrent runs", function() {
 
 });
 
+describe( "onCssBuildWrite", function() {
+	var css;
+
+	before(function( done ) {
+		AmdCssBuilder( files, {
+			include: [ "foo" ],
+			onCssBuildWrite: function( path, data ) {
+				if ( /bar/.test( path ) ) {
+					data = data.replace( /bar/, "baz" ).replace( /foo/, "qux" );
+				}
+				return data;
+			}
+		}, function( error, _css ) {
+			css = _css;
+			done( error );
+		});
+	});
+
+	it( "should allow rewriting CSS content analogous to onBuildWrite for JS", function() {
+		expect( css ).to.equal( ".foo {}\n.baz {}\n" );
+	});
+
+});
+

@@ -47,8 +47,13 @@ function buildCss( files, config, callback ) {
 			files[ path ] = data;
 		},
 		loadFile: function( path ) {
+			var data;
 			path = normalizePath( path );
-			return files[ path ];
+			data = files[ path ];
+			if ( config.onCssBuildWrite ) {
+				data = config.onCssBuildWrite( path, data );
+			}
+			return data;
 		}
 	};
 	config.optimizeCss = "none";
